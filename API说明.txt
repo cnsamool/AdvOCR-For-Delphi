@@ -1,0 +1,42 @@
+以下是DELPHI中的调用示例，其他语言请参看压缩包中相应目录的示范源码
+
+const 
+  DLL_NAME  = 'AdvOcr.dll';
+
+  { 图像格式转换函数 ：可将其他格式的图片转换成 24 bpp BMP 格式，支持转换的图片格式有 PNG, JPG, JPEG, GIF }
+  procedure IMG2BMP(filename : PChar); Stdcall;external DLL_NAME name 'IMG2BMP';
+
+  { 识别引擎初始化函数 }
+  function OcrInit : boolean; Stdcall;external DLL_NAME name 'OcrInit';
+
+  { 识别引擎终止化函数 }
+  procedure OcrDone; Stdcall;external DLL_NAME name 'OcrDone';
+
+  { 识别函数 1 ：可支持 VC 调用 }
+  function OCR_C(OCR_type,filename : PChar): PChar; Stdcall;external DLL_NAME name 'OCR_C';
+
+  { 识别函数 2 ：可支持 VB 调用， 功能和识别函数1相同只是参数以及返回值不同 }
+  function OCR_B(OCR_type,filename : PChar; var CodeStr : PChar): boolean; Stdcall;external DLL_NAME name 'OCR_C';
+
+使用时请在目标机上先安装识别引擎，将demo程序目录中的 .dat  .ini  和 .dll 文件复制到您的程序目录下一起发布即可，调用OcrInit即可自动安装 
+
+c# 调用代码
+
+ #region AdvOcr.dll 采用第三方附加码识别
+        [DllImport("AdvOcr.dll", EntryPoint = "IMG2BMP", SetLastError = true,
+              CharSet = CharSet.Ansi, ExactSpelling = true,
+               CallingConvention = CallingConvention.StdCall)]
+        protected  static extern void IMG2BMP(string fileName);
+       [DllImport("AdvOcr.dll", EntryPoint = "OcrInit", SetLastError = true,
+              CharSet = CharSet.Ansi, ExactSpelling = true,
+               CallingConvention = CallingConvention.StdCall)]
+       protected static extern bool OcrInit();
+       [DllImport("AdvOcr.dll", EntryPoint = "OcrDone", SetLastError = true,
+              CharSet = CharSet.Ansi, ExactSpelling = true,
+                CallingConvention = CallingConvention.StdCall)]
+       protected static extern bool OcrDone();
+        [DllImport("AdvOcr.dll", EntryPoint = "OCR_C", SetLastError = true,
+             CharSet = CharSet.Ansi, ExactSpelling = true,
+               CallingConvention = CallingConvention.StdCall)]
+        protected static extern string OCR_C(string type, string fileName);
+      #endregion
